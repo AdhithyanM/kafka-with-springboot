@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: kafka-consumer-example
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: tt-group-1
+
+server:
+  port: 9292
