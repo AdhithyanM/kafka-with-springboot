@@ -35,6 +35,18 @@ public class KafkaMessagePublisher {
         });
     }
 
+    public void sendMessageToTopicWithPartitionControl(String message) {
+        Integer partitionNumber = 3;
+        CompletableFuture<SendResult<String, Object>> future = template.send("test-topic-3", partitionNumber, null, message);
+        future.whenComplete((result, exception) -> {
+            if (exception == null) {
+                System.out.println("Sent message = ["+message+"] with offset = ["+result.getRecordMetadata().offset()+"]");
+            } else {
+                System.out.println("Unable to send message=["+message+"] due to : "+exception.getMessage());
+            }
+        });
+    }
+
     public void sendEventsToTopic(Customer customer) {
         try {
             CompletableFuture<SendResult<String, Object>> future = template.send("customer-topic", customer);
