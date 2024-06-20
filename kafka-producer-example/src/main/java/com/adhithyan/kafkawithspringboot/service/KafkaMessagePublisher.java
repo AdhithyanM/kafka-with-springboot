@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import com.adhithyan.kafkawithspringboot.dto.Customer;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -27,10 +28,25 @@ public class KafkaMessagePublisher {
         // Handle the result of the send operation when it completes.
         future.whenComplete((result, exception) -> {
             if (exception == null) {
-                System.out.println("Sent message=["+message+"] with offset = ["+result.getRecordMetadata().offset()+"]");
+                System.out.println("Sent message = ["+message+"] with offset = ["+result.getRecordMetadata().offset()+"]");
             } else {
                 System.out.println("Unable to send message=["+message+"] due to : "+exception.getMessage());
             }
         });
+    }
+
+    public void sendEventsToTopic(Customer customer) {
+        try {
+            CompletableFuture<SendResult<String, Object>> future = template.send("customer-topic", customer);
+            future.whenComplete((result, ex) -> {
+                if(ex == null) {
+                    System.out.println("Sent message = ["+customer.toString()+"] with offset = ["+result.getRecordMetadata().offset()+"]");
+                } else {
+                    System.out.println("Unable to send message = ["+customer.toString()+"] due to : "+ex.getMessage());
+                }
+            });
+        } catch (Exception ex) {
+            System.out.println("ERROR: "+ex.getMessage());
+        }
     }
 }
